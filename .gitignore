@@ -1,18 +1,50 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# ==========================================================
+#  Keil MDK-ARM  —  مخرجات البناء . لا تُرفع أبداً
+# ==========================================================
+Objects/
+Listings/
+DebugConfig/
+RTE/
+*.uvguix.*
+*.uvoptx
+*.bak
+*.sct
+*.scvd
+*.dep
+*.lnp
+*.build_log.htm
+*.htm
 
-# Other files and folders
-.settings/
+# ملفات وسيطة
+*.o
+*.d
+*.crf
+*.i
+*.lst
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# مخرجات نهائية ( تُبنى من المصدر ــ لا معنى لحفظها )
+*.axf
+*.elf
+*.hex
+*.bin
+*.map
+*.srec
+*.eep
+*.lss
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# أدوات
+JLinkLog.txt
+*.jdebug*
+.vs/
+.vscode/
+*.swp
+*~
+Thumbs.db
+.DS_Store
+
+# ==========================================================
+#  ما يُرفع فعلاً :
+#     ‎*.uvprojx     ملف المشروع
+#     ‎*.c  *.h      المصدر
+#     ‎*.md          التوثيق
+# ==========================================================
