@@ -111,3 +111,4 @@ Driver/HAL/PWM2LOGIC
 ## رخصة
 
 للاستخدام التعليمي والشخصي.
+GNU GENERAL PUBLIC LICENSE

@@ -1,0 +1,89 @@
+/*
+ *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<    RCC_interface.h    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ *
+ *  Author  : Hussam Ali
+ *  Date    : 8/23/2026
+ *  Vertion : 1.0
+ *  Layer   : MCAL
+ *  SWC     : RCC
+ *
+ */
+
+#ifndef RCC_INTERFACE_H
+#define RCC_INTERFACE_H
+
+
+/*==================================================================*/
+/*                          Bus Names                               */
+/*==================================================================*/
+#define AHB_BUS       0
+#define APB1_BUS      1
+#define APB2_BUS      2
+
+
+/*==================================================================*/
+/*        Peripheral Numbers  =  bit number inside the ENR          */
+/*==================================================================*/
+
+/* --------- AHB peripherals  (RCC_AHBENR) --------- */
+#define DMA1_RCC      0
+#define DMA2_RCC      1
+#define SRAM_RCC      2
+#define FLITF_RCC     4
+#define CRC_RCC       6
+
+/* --------- APB1 peripherals (RCC_APB1ENR) -------- */
+#define TIM2_RCC      0
+#define TIM3_RCC      1
+#define TIM4_RCC      2
+#define WWDG_RCC     11
+#define SPI2_RCC     14
+#define USART2_RCC   17
+#define USART3_RCC   18
+#define I2C1_RCC     21
+#define I2C2_RCC     22
+#define CAN_RCC      25
+#define PWR_RCC      28
+
+/* --------- APB2 peripherals (RCC_APB2ENR) -------- */
+#define AFIO_RCC      0
+#define GPIOA_RCC     2
+#define GPIOB_RCC     3
+#define GPIOC_RCC     4
+#define GPIOD_RCC     5
+#define ADC1_RCC      9
+#define ADC2_RCC     10
+#define TIM1_RCC     11
+#define SPI1_RCC     12
+#define USART1_RCC   14
+
+
+/*==================================================================*/
+/*                          Functions                               */
+/*==================================================================*/
+
+/*
+ * Brief      : يضبط مصدر ساعة النظام حسب ما اخترناه في RCC_config.h
+ * Parameters : void
+ * Return     : void
+ */
+void RCC_voidInitSysClock(void);
+
+/*
+ * Brief      : يفتح ساعة محيطي واحد
+ * Parameters : Copy_u8BusID  --> AHB_BUS , APB1_BUS , APB2_BUS
+ *              Copy_u8PerID  --> رقم البت من القائمة أعلاه
+ * Return     : void
+ *
+ * Hint       : أي سجل لمحيطي ساعته مغلقة يُقرأ صفراً دائماً
+ *              ولا تؤثر فيه الكتابة اطلاقاً.
+ */
+void RCC_voidEnablePeripheralClock(u8 Copy_u8BusID, u8 Copy_u8PerID);
+
+/*
+ * Brief      : يغلق ساعة محيطي واحد ( لتوفير الطاقة )
+ */
+void RCC_voidDisablePeripheralClock(u8 Copy_u8BusID, u8 Copy_u8PerID);
+
+
+#endif /* RCC_INTERFACE_H */
