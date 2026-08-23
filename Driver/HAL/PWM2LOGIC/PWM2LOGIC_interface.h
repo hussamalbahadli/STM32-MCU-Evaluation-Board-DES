@@ -13,39 +13,39 @@
 #define PWM2LOGIC_INTERFACE_H
 
 /*==================================================================*/
-/*  يحوّل نبضة PWM من مستقبل RC أو من متحكّم طيران                  */
-/*  إلى مستوى لوجك بسيط  ( 0 أو 1 )                                 */
+/*  Converts a PWM pulse from an RC receiver or flight controller   */
+/*  into a simple logic level  ( 0 or 1 )                           */
 /*                                                                  */
-/*      عرض النبضة  <=  800 us   ->  الخرج 0                        */
-/*      عرض النبضة  >= 1900 us   ->  الخرج 1                        */
-/*      بين الاثنين               ->  يبقى على حاله                 */
-/*      لا اشارة                  ->  الخرج 0  ( failsafe )         */
+/*      pulse width  <=  800 us   ->  output 0                      */
+/*      pulse width  >= 1900 us   ->  output 1                      */
+/*      between the two           ->  stays as-is                  */
+/*      no signal                 ->  output 0  ( failsafe )        */
 /*==================================================================*/
 
 #define PWM2LOGIC_STATE_LOW     0
 #define PWM2LOGIC_STATE_HIGH    1
 
 /*
- * Brief      : يهيّئ بن الدخل وبن الخرج ويشغّل الـ ICU
- * Hint       : افتح سواعد RCC في main قبل استدعائها
+ * Brief      : configures the input pin and output pin and starts the ICU
+ * Hint       : enable RCC clocks in main before calling it
  */
 void PWM2LOGIC_voidInit(void);
 
 /*
- * Brief      : يقرأ النبضة ويحدّث الخرج
- *              تُنادى باستمرار داخل الحلقة الرئيسية
+ * Brief      : reads the pulse and updates the output
+ *              called continuously inside the main loop
  */
 void PWM2LOGIC_voidUpdate(void);
 
 /*
- * Brief      : الحالة الحالية للخرج
- * Return     : PWM2LOGIC_STATE_LOW  أو  PWM2LOGIC_STATE_HIGH
+ * Brief      : the current state of the output
+ * Return     : PWM2LOGIC_STATE_LOW  or  PWM2LOGIC_STATE_HIGH
  */
 u8 PWM2LOGIC_u8GetState(void);
 
 /*
- * Brief      : آخر عرض نبضة تمّت قراءته ــ للتصحيح فقط
- * Return     : بالميكروثانية
+ * Brief      : the last pulse width read ― for debugging only
+ * Return     : in microseconds
  */
 u16 PWM2LOGIC_u16GetLastPulse(void);
 

@@ -13,13 +13,14 @@
 #define GPIO_CONFIG_H
 
 /*==================================================================*/
-/*  كم بورت موجود على القطعة التي تستعملها ؟                        */
+/*  How many ports does the chip you're using have?                 */
 /*                                                                  */
 /*      STM32F103C8  ( Blue Pill )  ->  GPIOC                       */
 /*      STM32F103RB                 ->  GPIOD                       */
 /*                                                                  */
-/*  هذا التعريف للتوثيق فقط في هذه النسخة المبسّطة .                */
-/*  استدعاء بورت غير موجود لا يعطي خطأ ــ يكتب على عنوان فارغ .     */
+/*  This define is for documentation only in this simplified version*/
+/*  Calling a non-existent port doesn't raise an error ― it writes  */
+/*  to an empty address.                                            */
 /*==================================================================*/
 
 #define GPIO_LAST_PORT      GPIOD

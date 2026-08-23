@@ -1,38 +1,38 @@
 # STM32-MCU-Evaluation-Board-DES
 
-درايفرات وأمثلة لـ **STM32F103** مكتوبة من الصفر على السجلّات مباشرة ــ
-بلا HAL من ST وبلا كود مولَّد من CubeMX.
+Drivers and examples for **STM32F103** written from scratch directly on the registers ―
+no ST HAL and no CubeMX-generated code.
 
-الهدف: **فهم كل بت نكتبه**، ثم استعماله في التدريس والمشاريع.
+Goal: **understand every bit we write**, then use it for teaching and projects.
 
-> النسخة المقابلة على AVR: [AVR-MCU-Evaluation-Board-DES](https://github.com/hussamalbahadli/AVR-MCU-Evaluation-Board-DES)
-> نفس المعمارية بالضبط ــ ما يتغيّر هو أسماء السجلّات فقط.
+> The matching version on AVR: [AVR-MCU-Evaluation-Board-DES](https://github.com/hussamalbahadli/AVR-MCU-Evaluation-Board-DES)
+> The exact same architecture ― only the register names change.
 
 ---
 
-## المعمارية
+## Architecture
 
-كل درايفر أربعة ملفات، لا أكثر ولا أقل:
+Every driver has exactly four files, no more and no less:
 
-| الملف | محتواه | من يقرأه |
+| File | Content | Who reads it |
 |---|---|---|
-| `X_interface.h` | التواقيع والثوابت العامة ــ **العقد** | المستخدم |
-| `X_private.h` | عناوين السجلّات وأرقام البتات | الدرايفر فقط |
-| `X_config.h` | كل ما هو قابل للتعديل | المستخدم قبل البناء |
-| `X_program.c` | التنفيذ | لا أحد بعد كتابته |
+| `X_interface.h` | Public signatures and constants ― **the contract** | The user |
+| `X_private.h` | Register addresses and bit numbers | The driver only |
+| `X_config.h` | Everything that is configurable | The user, before building |
+| `X_program.c` | The implementation | No one, once it's written |
 
-**القاعدة الذهبية:** لو نقلنا الكود إلى قطعة أخرى، يتغيّر `_private.h` و `_program.c` فقط.
-`_interface.h` لا يتغيّر بحرف ــ ولهذا لا تتغيّر طبقة التطبيق.
+**Golden rule:** if we port the code to another chip, only `_private.h` and `_program.c` change.
+`_interface.h` doesn't change a single character ― which is why the application layer never changes.
 
 ```
 Driver/
 ├── LIB/          STD_TYPES.h · BIT_MATH.h
-├── MCAL/         ما يلمس السجلّات مباشرة
-│   ├── RCC/      ✅  الساعة ــ قبل كل شيء
-│   ├── GPIO/     ✅  الدخل والخرج الرقمي
-│   └── ICU/      ✅  قياس عرض النبضة بالهاردوير
-└── HAL/          ما لا يلمس السجلّات إطلاقاً
-    └── PWM2LOGIC/ ✅  تحويل PWM إلى مستوى لوجك
+├── MCAL/         What touches the registers directly
+│   ├── RCC/      ✅  Clock ― before everything else
+│   ├── GPIO/     ✅  Digital input and output
+│   └── ICU/      ✅  Hardware pulse-width measurement
+└── HAL/          What never touches registers at all
+    └── PWM2LOGIC/ ✅  PWM to logic-level conversion
 
 Example/
 ├── 01_GPIO_Blink/     ✅
@@ -44,9 +44,9 @@ Docs/
 
 ---
 
-## حالة الدرايفرات
+## Driver status
 
-| # | الدرايفر | الطبقة | الحالة | مُختبَر على هاردوير |
+| # | Driver | Layer | Status | Tested on hardware |
 |---|---|---|---|---|
 | 1 | `RCC` | MCAL | ✅ | ✅ |
 | 2 | `GPIO` | MCAL | ✅ | ✅ |
@@ -62,19 +62,19 @@ Docs/
 | 12 | `TIM` (PWM out) | MCAL | ⬜ | — |
 | 13 | `DMA` | MCAL | ⬜ | — |
 
-طبقة HAL (`CLCD` · `KPD` · `SSD` · `SW` · `DC_MOTOR` · `STEPPER` · `LM35` · `EEPROM`)
-تُنقَل من مستودع AVR باستبدال `DIO_*` بـ `GPIO_*` ــ لأنها لا تلمس السجلّات أصلاً.
+The HAL layer (`CLCD` · `KPD` · `SSD` · `SW` · `DC_MOTOR` · `STEPPER` · `LM35` · `EEPROM`)
+is ported from the AVR repo by replacing `DIO_*` with `GPIO_*` ― since it never touches registers anyway.
 
 ---
 
-## القطعة والأداة
+## Chip and tools
 
-- **المتحكّم:** STM32F103RBT6 (يعمل أيضاً على STM32F103C8 «Blue Pill» مع تعديل `GPIO_config.h`)
-- **الـ IDE:** Keil MDK-ARM
-- **المبرمجة:** ST-Link V2
-- **المرجع الوحيد المعتمد:** `RM0008` من ST ــ لا فيديوهات ولا مقالات
+- **MCU:** STM32F103RBT6 (also works on STM32F103C8 "Blue Pill" with a `GPIO_config.h` tweak)
+- **IDE:** Keil MDK-ARM
+- **Programmer:** ST-Link V2
+- **The only reference used:** ST's `RM0008` ― no videos, no articles
 
-### مسارات الـ include المطلوبة في Keil
+### Include paths required in Keil
 
 ```
 Driver/LIB
@@ -86,29 +86,29 @@ Driver/HAL/PWM2LOGIC
 
 ---
 
-## كيف أضيف درايفراً جديداً
+## How to add a new driver
 
-1. اقرأ فصل المحيطي في `RM0008` وسجّل ملاحظاتك في `Docs/RM0008_notes.md`.
-2. ارسم خريطة سجلّاته بخط يدك.
-3. اكتب `_private.h` ــ العناوين وأرقام البتات فقط.
-4. اكتب `_interface.h` ــ **التواقيع قبل أي تنفيذ**.
-5. اكتب `_config.h` ــ كل خيار مع تعليق يعدّد قيمه المسموحة.
-6. اكتب `_program.c`.
-7. اصنع مثالاً في `Example/NN_<name>/` ــ أصغر برنامج يثبت أنه يعمل.
-8. جرّبه على الهاردوير، ثم افتح **System Viewer** وتأكّد أن قيم السجلّات هي ما توقّعت.
-9. `git commit` برسالة تشرح **ماذا** و**لماذا**.
+1. Read the peripheral chapter in `RM0008` and log your notes in `Docs/RM0008_notes.md`.
+2. Draw its register map by hand.
+3. Write `_private.h` ― addresses and bit numbers only.
+4. Write `_interface.h` ― **signatures before any implementation**.
+5. Write `_config.h` ― every option with a comment listing its allowed values.
+6. Write `_program.c`.
+7. Build an example in `Example/NN_<name>/` ― the smallest program that proves it works.
+8. Test it on hardware, then open **System Viewer** and confirm the register values are what you expected.
+9. `git commit` with a message explaining **what** and **why**.
 
 ---
 
-## أسلوب الكتابة
+## Coding style
 
-- تعريف السجل بنفس اسلوب AVR: `*((volatile u32*)(BASE + OFFSET))`
-- أسماء الوسائط: `Copy_u8...` · المتغيّرات المحلية: `Local_u8...`
-- الدوال: `MODULE_voidName` · `MODULE_u8Name` حسب نوع الإرجاع
-- **بلا** `typedef struct` للسجلّات، **بلا** ماكرو معقّد، **بلا** `ErrorStatus` في هذه النسخة
-  ــ هذه كلها دروس لاحقة تُضاف بعد أن يتقن الطالب الأساس
+- Register definition follows the same style as AVR: `*((volatile u32*)(BASE + OFFSET))`
+- Parameter names: `Copy_u8...` · local variables: `Local_u8...`
+- Functions: `MODULE_voidName` · `MODULE_u8Name` depending on the return type
+- **No** `typedef struct` for registers, **no** complex macros, **no** `ErrorStatus` in this version
+  ― these are all later lessons added once the student masters the basics
 
-## رخصة
+## License
 
-للاستخدام التعليمي والشخصي.
+For educational and personal use.
 GNU GENERAL PUBLIC LICENSE

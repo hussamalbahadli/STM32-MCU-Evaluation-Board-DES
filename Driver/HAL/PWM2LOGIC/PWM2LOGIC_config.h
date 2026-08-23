@@ -13,8 +13,8 @@
 #define PWM2LOGIC_CONFIG_H
 
 /*==================================================================*/
-/*                        بن الدخل                                  */
-/*  يجب أن يطابق المؤقّت المختار في ICU_config.h :                  */
+/*                        Input pin                                 */
+/*  Must match the timer chosen in ICU_config.h :                   */
 /*      TIM2 -> PA0    TIM3 -> PA6    TIM4 -> PB6                   */
 /*==================================================================*/
 #define PWM2LOGIC_u8_IN_PORT        GPIOA
@@ -22,22 +22,22 @@
 
 
 /*==================================================================*/
-/*                        بن الخرج                                  */
+/*                        Output pin                                 */
 /*==================================================================*/
 #define PWM2LOGIC_u8_OUT_PORT       GPIOB
 #define PWM2LOGIC_u8_OUT_PIN        PIN0
 
 
 /*==================================================================*/
-/*                      شكل الخرج                                   */
+/*                      Output type                                  */
 /*                                                                  */
 /*  PWM2LOGIC_OUT_PUSH_PULL_3V3                                     */
-/*      خرج 0 / 3.3 فولت مباشرة . لا يحتاج أي مكوّن خارجي .         */
+/*      Direct 0 / 3.3V output. No external component needed.       */
 /*                                                                  */
 /*  PWM2LOGIC_OUT_OPEN_DRAIN_5V                                     */
-/*      البن يسحب إلى 0 فولت فقط ، ويحتاج مقاومة 4.7 كيلو           */
-/*      من البن إلى +5 فولت . النتيجة خرج 0 / 5 فولت حقيقي .        */
-/*      ملاحظة : المنطق ينعكس كهربائياً ــ الكود يتكفّل بذلك .      */
+/*      The pin only pulls to 0V, and needs a 4.7k resistor         */
+/*      from the pin to +5V. The result is a true 0 / 5V output.    */
+/*      Note : the logic is electrically inverted ― the code handles it. */
 /*==================================================================*/
 #define PWM2LOGIC_OUT_PUSH_PULL_3V3     0
 #define PWM2LOGIC_OUT_OPEN_DRAIN_5V     1
@@ -46,17 +46,17 @@
 
 
 /*==================================================================*/
-/*                        العتبات                                   */
+/*                        Thresholds                                 */
 /*==================================================================*/
 #define PWM2LOGIC_u16_LOW_THRESHOLD_US       800U
 #define PWM2LOGIC_u16_HIGH_THRESHOLD_US     1900U
 
-/* أي قراءة خارج هذا المدى تُعتبر ضوضاء وتُهمل */
+/* Any reading outside this range is considered noise and ignored */
 #define PWM2LOGIC_u16_MIN_VALID_US           500U
 #define PWM2LOGIC_u16_MAX_VALID_US          2500U
 
-/* كم قراءة متتالية متّفقة نطلب قبل تغيير الخرج ؟
- * 1 = تبديل فوري       3 = مقاومة جيدة للضوضاء ( موصى به ) */
+/* How many consecutive matching readings do we require before changing the output ?
+ * 1 = instant switch       3 = good noise resistance ( recommended ) */
 #define PWM2LOGIC_u8_AGREE_COUNT               3U
 
 #endif /* PWM2LOGIC_CONFIG_H */

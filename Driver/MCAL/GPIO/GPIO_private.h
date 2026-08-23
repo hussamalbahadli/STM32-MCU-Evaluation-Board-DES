@@ -13,13 +13,13 @@
 #define GPIO_PRIVATE_H
 
 /*==================================================================*/
-/*  السجلات فقط ــ لا يوجد أي منطق في هذا الملف                     */
-/*  المرجع : RM0008  Chapter 9                                      */
+/*  Registers only ― there is no logic at all in this file          */
+/*  Reference : RM0008  Chapter 9                                   */
 /*                                                                  */
-/*  لاحظ : نفس اسلوب AVR بالضبط                                     */
+/*  Note : the exact same style as AVR                              */
 /*      AVR    :  #define PORTA_Register  *((volatile u8 *)0x3B)    */
 /*      STM32  :  #define GPIOA_ODR       *((volatile u32*)....)    */
-/*  الفرق الوحيد هو u32 بدل u8 ــ لا اكثر                           */
+/*  The only difference is u32 instead of u8 ― nothing more          */
 /*==================================================================*/
 
 #define GPIOA_BASE_ADDRESS      0x40010800UL
@@ -27,11 +27,11 @@
 #define GPIOC_BASE_ADDRESS      0x40011000UL
 #define GPIOD_BASE_ADDRESS      0x40011400UL
 
-/* الإزاحات داخل كل بورت */
-#define GPIO_CRL_OFFSET     0x00      /* ضبط البنّات  0 .. 7   */
-#define GPIO_CRH_OFFSET     0x04      /* ضبط البنّات  8 .. 15  */
-#define GPIO_IDR_OFFSET     0x08      /* قراءة  ( مثل PINx )   */
-#define GPIO_ODR_OFFSET     0x0C      /* كتابة  ( مثل PORTx )  */
+/* Offsets within each port */
+#define GPIO_CRL_OFFSET     0x00      /* configures pins  0 .. 7   */
+#define GPIO_CRH_OFFSET     0x04      /* configures pins  8 .. 15  */
+#define GPIO_IDR_OFFSET     0x08      /* read  ( like PINx )   */
+#define GPIO_ODR_OFFSET     0x0C      /* write  ( like PORTx )  */
 
 
 /*------------------------ GPIOA ------------------------*/
@@ -59,7 +59,7 @@
 #define GPIOD_ODR   *((volatile u32*)(GPIOD_BASE_ADDRESS + GPIO_ODR_OFFSET))
 
 
-/* كل بن يحجز 4 بتات في سجل الضبط */
+/* Every pin reserves 4 bits in the config register */
 #define GPIO_PIN_WIDTH      4
 #define GPIO_MODE_MASK      0b1111UL
 

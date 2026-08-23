@@ -20,76 +20,76 @@
 /*==================================================================*/
 /*                          ICU_voidInit                            */
 /*                                                                  */
-/*  الفكرة كلها في سطر واحد :                                       */
-/*  نجعل بناً واحداً يغذّي قناتَي التقاط في نفس الوقت .              */
+/*  The whole idea in one line :                                    */
+/*  we make a single pin feed two capture channels at the same time.*/
 /*                                                                  */
-/*      الحافة الصاعدة  ->  القناة 1 تلتقط  و  تصفّر العدّاد        */
-/*      الحافة النازلة  ->  القناة 2 تلتقط                          */
+/*      rising edge  ->  channel 1 captures  and  resets the counter */
+/*      falling edge  ->  channel 2 captures                        */
 /*                                                                  */
-/*  فتصير :                                                         */
-/*      CCR1 = طول الدورة الكاملة                                   */
-/*      CCR2 = عرض النبضة                                           */
+/*  So we get :                                                     */
+/*      CCR1 = length of the full period                            */
+/*      CCR2 = pulse width                                          */
 /*                                                                  */
-/*  ونضبط الـ PSC حتى تصير التكّة = 1 ميكروثانية ،                  */
-/*  فتصبح CCR2 هي العرض بالميكروثانية مباشرة بلا أي حساب .          */
+/*  and we set the PSC so that each tick = 1 microsecond,           */
+/*  which makes CCR2 the width in microseconds directly, no math needed. */
 /*==================================================================*/
 void ICU_voidInit(void)
 {
-    /* 1- اطفئ العدّاد قبل تغيير اعداداته */
+    /* 1- turn off the counter before changing its settings */
     CLR_BIT(ICU_CR1, ICU_CR1_CEN);
 
-    /* 2- المقسّم : نريد تكّة واحدة = 1 ميكروثانية
-     *    التردد المطلوب = 1 مليون تكّة/ثانية
-     *    PSC = ( ساعة المؤقّت / 1000000 ) - 1
-     *    مثال : 8 ميغا -> PSC = 7          */
+    /* 2- prescaler : we want a single tick = 1 microsecond
+     *    required frequency = 1 million ticks/second
+     *    PSC = ( timer clock / 1000000 ) - 1
+     *    example : 8 MHz -> PSC = 7          */
     ICU_PSC = (ICU_u32_TIMER_CLOCK_HZ / 1000000UL) - 1UL;
 
-    /* 3- أقصى قيمة للعدّاد = نافذة 65.535 ملي ثانية
-     *    اشارة السيرفو دورتها 20 ملي ثانية ، فالنافذة كافية
-     *    وأي انقطاع أطول من ذلك يرفع علم الفيضان .        */
+    /* 3- max counter value = 65.535 ms window
+     *    the servo signal's period is 20 ms, so the window is enough,
+     *    and any gap longer than that raises the overflow flag.        */
     ICU_ARR = ICU_ARR_MAX;
 
-    /* 4- القناة 1 تقرأ من TI1 مباشرة */
+    /* 4- channel 1 reads from TI1 directly */
     ICU_CCMR1 &= ~(0b11UL   << ICU_CCMR1_CC1S);
     ICU_CCMR1 |=  ((u32)ICU_CC1S_TI1 << ICU_CCMR1_CC1S);
 
-    /* 5- القناة 2 تقرأ من نفس TI1 لكن معكوسة */
+    /* 5- channel 2 reads from the same TI1 but inverted */
     ICU_CCMR1 &= ~(0b11UL   << ICU_CCMR1_CC2S);
     ICU_CCMR1 |=  ((u32)ICU_CC2S_TI1 << ICU_CCMR1_CC2S);
 
-    /* 6- مرشّح للضوضاء على القناتين
-     *    يتجاهل أي نبضة أقصر من 8 تكّات ــ ضروري مع مستقبل RC */
+    /* 6- noise filter on both channels
+     *    ignores any pulse shorter than 8 ticks ― necessary with an RC receiver */
     ICU_CCMR1 &= ~(0b1111UL << ICU_CCMR1_IC1F);
     ICU_CCMR1 |=  ((u32)ICU_FILTER_8 << ICU_CCMR1_IC1F);
     ICU_CCMR1 &= ~(0b1111UL << ICU_CCMR1_IC2F);
     ICU_CCMR1 |=  ((u32)ICU_FILTER_8 << ICU_CCMR1_IC2F);
 
-    /* 7- القناة 1 على الحافة الصاعدة ، القناة 2 على النازلة */
-    CLR_BIT(ICU_CCER, ICU_CCER_CC1P);      /* 0 = صاعدة */
-    SET_BIT(ICU_CCER, ICU_CCER_CC2P);      /* 1 = نازلة */
+    /* 7- channel 1 on the rising edge, channel 2 on the falling edge */
+    CLR_BIT(ICU_CCER, ICU_CCER_CC1P);      /* 0 = rising */
+    SET_BIT(ICU_CCER, ICU_CCER_CC2P);      /* 1 = falling */
 
-    /* 8- فعّل القناتين */
+    /* 8- enable both channels */
     SET_BIT(ICU_CCER, ICU_CCER_CC1E);
     SET_BIT(ICU_CCER, ICU_CCER_CC2E);
 
-    /* 9- وضع Reset : كل حافة صاعدة تصفّر العدّاد
-     *    وهذا هو سبب كون القياس دقيقاً بلا مقاطعات */
+    /* 9- Reset mode : every rising edge resets the counter
+     *    and this is why the measurement is accurate without interrupts */
     ICU_SMCR &= ~(0b111UL << ICU_SMCR_TS);
     ICU_SMCR |=  ((u32)ICU_TS_TI1FP1 << ICU_SMCR_TS);
     ICU_SMCR &= ~(0b111UL << ICU_SMCR_SMS);
     ICU_SMCR |=  ((u32)ICU_SMS_RESET << ICU_SMCR_SMS);
 
-    /*10- URS = 1  ــ  مهم جداً :
-     *    في وضع Reset كل نبضة تصفّر العدّاد ، والتصفير نفسه
-     *    يرفع علم UIF لو تركنا URS = 0 . عندها يظن الكود
-     *    أن الإشارة مفقودة 50 مرة في الثانية .
-     *    مع URS = 1 لا يُرفع UIF الا عند فيضان حقيقي .   */
+    /*10- URS = 1  ―  very important :
+     *    in Reset mode every pulse resets the counter, and the reset itself
+     *    raises the UIF flag if we leave URS = 0. Then the code thinks
+     *    the signal is lost 50 times a second.
+     *    with URS = 1, UIF is only raised on a real overflow.   */
     SET_BIT(ICU_CR1, ICU_CR1_URS);
 
-    /*11- حمّل PSC و ARR فعلياً */
+    /*11- actually load PSC and ARR */
     SET_BIT(ICU_EGR, ICU_EGR_UG);
 
-    /*12- امسح الأعلام ثم شغّل العدّاد */
+    /*12- clear the flags then start the counter */
     ICU_SR = 0;
     SET_BIT(ICU_CR1, ICU_CR1_CEN);
 }
@@ -116,8 +116,8 @@ u16 ICU_u16GetPeriod(void)
 /*==================================================================*/
 /*                     ICU_u8IsSignalLost                           */
 /*                                                                  */
-/*  اذا فاض العدّاد فمعناه أن 65 ملي ثانية مرّت بلا حافة صاعدة .    */
-/*  نقرأ العلم ثم نمسحه لنكون جاهزين للمرة القادمة .                */
+/*  If the counter overflows it means 65 ms passed with no rising edge. */
+/*  We read the flag then clear it to be ready for next time.       */
 /*==================================================================*/
 u8 ICU_u8IsSignalLost(void)
 {
@@ -126,7 +126,7 @@ u8 ICU_u8IsSignalLost(void)
     if (GET_BIT(ICU_SR, ICU_SR_UIF) == 1)
     {
         Local_u8Lost = 1;
-        CLR_BIT(ICU_SR, ICU_SR_UIF);   /* امسح العلم */
+        CLR_BIT(ICU_SR, ICU_SR_UIF);   /* clear the flag */
     }
 
     return Local_u8Lost;

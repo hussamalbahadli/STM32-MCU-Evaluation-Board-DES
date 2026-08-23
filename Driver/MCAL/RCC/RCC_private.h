@@ -13,15 +13,15 @@
 #define RCC_PRIVATE_H
 
 /*==================================================================*/
-/*  السجلات فقط ــ لا يوجد أي منطق في هذا الملف                     */
+/*  Registers only ― there is no logic at all in this file          */
 /*  RCC Base Address = 0x40021000                                   */
-/*  المرجع : RM0008  Chapter 7                                      */
+/*  Reference : RM0008  Chapter 7                                    */
 /*==================================================================*/
 
 #define RCC_BASE_ADDRESS    0x40021000UL
 
-/* بنفس طريقة AVR بالضبط :  *((volatile u8*)0x3B)                   */
-/* الفرق الوحيد : هنا u32 لأن سجلات ARM بعرض 32 بت                  */
+/* The exact same way as AVR :  *((volatile u8*)0x3B)                */
+/* The only difference : here u32 because ARM registers are 32-bit wide */
 
 #define RCC_CR          *((volatile u32*)(RCC_BASE_ADDRESS + 0x00))
 #define RCC_CFGR        *((volatile u32*)(RCC_BASE_ADDRESS + 0x04))
@@ -34,11 +34,11 @@
 #define RCC_BDCR        *((volatile u32*)(RCC_BASE_ADDRESS + 0x20))
 #define RCC_CSR         *((volatile u32*)(RCC_BASE_ADDRESS + 0x24))
 
-/* سجل الفلاش ــ نحتاجه فقط عند 72 ميغا */
+/* Flash register ― only needed at 72 MHz */
 #define FLASH_ACR       *((volatile u32*)0x40022000UL)
 
 
-/*------------------ بتات سجل RCC_CR ------------------*/
+/*------------------ RCC_CR register bits ------------------*/
 #define RCC_CR_HSION        0
 #define RCC_CR_HSIRDY       1
 #define RCC_CR_HSEON       16
@@ -48,14 +48,14 @@
 #define RCC_CR_PLLON       24
 #define RCC_CR_PLLRDY      25
 
-/*------------------ بتات سجل RCC_CFGR ----------------*/
-#define RCC_CFGR_SW         0    /* 2 bit : مصدر ساعة النظام        */
-#define RCC_CFGR_SWS        2    /* 2 bit : المصدر الفعلي ( قراءة ) */
+/*------------------ RCC_CFGR register bits ----------------*/
+#define RCC_CFGR_SW         0    /* 2 bit : system clock source        */
+#define RCC_CFGR_SWS        2    /* 2 bit : actual source ( read only ) */
 #define RCC_CFGR_PLLSRC    16    /* 0 = HSI/2   1 = HSE             */
 #define RCC_CFGR_PLLXTPRE  17    /* 0 = HSE     1 = HSE/2           */
-#define RCC_CFGR_PLLMUL    18    /* 4 bit : معامل الضرب             */
+#define RCC_CFGR_PLLMUL    18    /* 4 bit : multiplier factor             */
 
-/*------------------ قيم SW / SWS ---------------------*/
+/*------------------ SW / SWS values ---------------------*/
 #define RCC_SW_HSI       0b00
 #define RCC_SW_HSE       0b01
 #define RCC_SW_PLL       0b10

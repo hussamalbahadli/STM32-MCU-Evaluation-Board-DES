@@ -1,10 +1,10 @@
-# ملاحظاتي على RM0008 — STM32F103
+# My notes on RM0008 — STM32F103
 
-> القاعدة: لا تكتب سطر درايفر قبل ملء القسم الخاص به هنا.
+> Rule: don't write a single driver line before filling in its section here.
 
-## عناوين القواعد (RM0008 — Memory map, Table 3)
+## Register addresses (RM0008 — Memory map, Table 3)
 
-| المحيطي | Base | الناقل |
+| Peripheral | Base | Bus |
 |---|---|---|
 | TIM2 | `0x40000000` | APB1 |
 | TIM3 | `0x40000400` | APB1 |
@@ -23,38 +23,38 @@
 | USART1 | `0x40013800` | APB2 |
 | RCC | `0x40021000` | AHB |
 | FLASH | `0x40022000` | AHB |
-| SysTick | `0xE000E010` | **النواة — بلا RCC** |
-| NVIC | `0xE000E100` | **النواة — بلا RCC** |
+| SysTick | `0xE000E010` | **Core — no RCC** |
+| NVIC | `0xE000E100` | **Core — no RCC** |
 
-## RCC — الساعة (§7)
-- كل محيطي ساعته **مغلقة** عند الإقلاع. سجل بلا ساعة يُقرأ صفراً ولا تؤثر فيه الكتابة.
-- `SW[1:0]` يختار المصدر، و `SWS[3:2]` يقول المصدر الفعلي — **اقرأ SWS للتأكّد**.
-- فوق 48 ميغا يجب ضبط `FLASH_ACR` latency = 2، وإلا HardFault فوري.
-- الـ PLL لا يقبل تعديل اعداداته وهو شغّال — أطفئه أولاً.
+## RCC — Clock (§7)
+- Every peripheral's clock is **gated off** at boot. A register with no clock reads zero and writes have no effect on it.
+- `SW[1:0]` selects the source, and `SWS[3:2]` reports the actual source in use — **read SWS to confirm**.
+- Above 48 MHz you must set `FLASH_ACR` latency = 2, otherwise an immediate HardFault.
+- The PLL doesn't accept configuration changes while running — turn it off first.
 
 ## GPIO — (§9)
-- أربع بتات لكل بن: `CNF[1:0]` + `MODE[1:0]`.
-- `CRL` للبنّات 0–7 · `CRH` للبنّات 8–15 ← **أكثر خطأ شائع**.
+- Four bits per pin: `CNF[1:0]` + `MODE[1:0]`.
+- `CRL` for pins 0–7 · `CRH` for pins 8–15 ← **the most common mistake**.
 - `MODE`: `00` input · `01` 10MHz · `10` 2MHz · `11` 50MHz
-- `CNF` في input: `00` analog · `01` floating · `10` pull-up/down (الاتجاه من `ODR`)
-- `CNF` في output: `00` PP · `01` OD · `10` AF-PP · `11` AF-OD
-- ⚠️ عائلة F4/F7/H7 مختلفة كلياً: `MODER`/`OTYPER`/`OSPEEDR`/`PUPDR`/`AFR`
+- `CNF` in input mode: `00` analog · `01` floating · `10` pull-up/down (direction from `ODR`)
+- `CNF` in output mode: `00` PP · `01` OD · `10` AF-PP · `11` AF-OD
+- ⚠️ F4/F7/H7 family is completely different: `MODER`/`OTYPER`/`OSPEEDR`/`PUPDR`/`AFR`
 
 ## TIM — PWM Input Mode (§15.3.6)
-- بن واحد `TI1` يغذّي قناتَي التقاط: `IC1` على الصاعدة و `IC2` على النازلة.
-- `SMS = 100` (Reset Mode) + `TS = 101` (TI1FP1) ⇒ كل حافة صاعدة تصفّر العدّاد.
-- النتيجة: `CCR1` = الدورة · `CCR2` = عرض النبضة.
-- `PSC = (fCK / 1000000) - 1` يجعل التكّة = 1 ميكروثانية ⇒ القراءة بالميكروثانية مباشرة.
-- 🔴 **`URS` في `CR1` يجب أن يساوي 1.** في Reset Mode كل نبضة تصفّر العدّاد،
-  والتصفير يرفع `UIF` لو كان `URS = 0` ⇒ كاشف فقدان الإشارة يصرخ 50 مرة/ثانية.
-- `IC1F`/`IC2F` = `0011` مرشّح ضوضاء — ضروري مع مستقبل RC.
+- A single pin `TI1` feeds two capture channels: `IC1` on the rising edge and `IC2` on the falling edge.
+- `SMS = 100` (Reset Mode) + `TS = 101` (TI1FP1) ⇒ every rising edge resets the counter.
+- Result: `CCR1` = period · `CCR2` = pulse width.
+- `PSC = (fCK / 1000000) - 1` makes each tick = 1 microsecond ⇒ reading is directly in microseconds.
+- 🔴 **`URS` in `CR1` must be 1.** In Reset Mode every pulse resets the counter,
+  and the reset raises `UIF` if `URS = 0` ⇒ the signal-loss detector fires 50 times/second.
+- `IC1F`/`IC2F` = `0011` noise filter — necessary with an RC receiver.
 
 ## TODO
-- [ ] SysTick — العدّاد التنازلي 24 بت و `COUNTFLAG`
-- [ ] NVIC — `AIRCR` يحتاج `VECTKEY = 0x05FA` وإلا تُهمل الكتابة
-- [ ] EXTI — `PR` تُمسح **بكتابة 1** لا 0
-- [ ] USART — حساب `BRR` بالـ mantissa/fraction
-- [ ] SPI — CPOL/CPHA وعلاقتها بالمجسّات
-- [ ] I2C — آلة الحالة والـ ACK/NACK
-- [ ] ADC — أزمنة العيّنة و scan mode
-- [ ] DMA — الأولويات و circular mode
+- [ ] SysTick — the 24-bit down-counter and `COUNTFLAG`
+- [ ] NVIC — `AIRCR` requires `VECTKEY = 0x05FA` otherwise the write is ignored
+- [ ] EXTI — `PR` is cleared **by writing 1**, not 0
+- [ ] USART — computing `BRR` from mantissa/fraction
+- [ ] SPI — CPOL/CPHA and their relation to sensors
+- [ ] I2C — the state machine and ACK/NACK
+- [ ] ADC — sample times and scan mode
+- [ ] DMA — priorities and circular mode

@@ -63,25 +63,25 @@
 /*==================================================================*/
 
 /*
- * Brief      : يضبط مصدر ساعة النظام حسب ما اخترناه في RCC_config.h
+ * Brief      : sets the system clock source according to what we chose in RCC_config.h
  * Parameters : void
  * Return     : void
  */
 void RCC_voidInitSysClock(void);
 
 /*
- * Brief      : يفتح ساعة محيطي واحد
+ * Brief      : enables the clock of a single peripheral
  * Parameters : Copy_u8BusID  --> AHB_BUS , APB1_BUS , APB2_BUS
- *              Copy_u8PerID  --> رقم البت من القائمة أعلاه
+ *              Copy_u8PerID  --> bit number from the list above
  * Return     : void
  *
- * Hint       : أي سجل لمحيطي ساعته مغلقة يُقرأ صفراً دائماً
- *              ولا تؤثر فيه الكتابة اطلاقاً.
+ * Hint       : any register of a peripheral whose clock is gated off always reads zero
+ *              and writes have no effect on it at all.
  */
 void RCC_voidEnablePeripheralClock(u8 Copy_u8BusID, u8 Copy_u8PerID);
 
 /*
- * Brief      : يغلق ساعة محيطي واحد ( لتوفير الطاقة )
+ * Brief      : disables the clock of a single peripheral ( to save power )
  */
 void RCC_voidDisablePeripheralClock(u8 Copy_u8BusID, u8 Copy_u8PerID);
 

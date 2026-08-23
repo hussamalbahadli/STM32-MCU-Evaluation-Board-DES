@@ -53,7 +53,7 @@
 /*==================================================================*/
 /*                        Pin Modes                                 */
 /*                                                                  */
-/*  كل بن يأخذ 4 بتات :        CNF[1:0]  MODE[1:0]                  */
+/*  Every pin takes 4 bits :        CNF[1:0]  MODE[1:0]             */
 /*  MODE = 00  ->  input                                            */
 /*  MODE = 01  ->  output 10 MHz                                    */
 /*  MODE = 10  ->  output  2 MHz                                    */
@@ -65,7 +65,7 @@
 #define INPUT_FLOATING            0b0100
 #define INPUT_PULLUP_PULLDOWN     0b1000
 
-/* الاسم القديم ــ مُبقى حتى لا تنكسر مشاريعك السابقة */
+/* The old name ― kept so your previous projects don't break */
 #define INPUT_ANLOG               INPUT_ANALOG
 
 /* --------------- Output  10 MHz -------------------- */
@@ -92,31 +92,31 @@
 /*==================================================================*/
 
 /*
- * Brief      : يضبط وضع بن واحد
+ * Brief      : sets the mode of a single pin
  * Parameters : Copy_u8PortID  --> GPIOA .. GPIOD
  *              Copy_u8PinID   --> PIN0 .. PIN15
- *              Copy_u8PinMode --> واحد من الـ modes أعلاه
+ *              Copy_u8PinMode --> one of the modes above
  * Return     : void
  *
- * Hint       : لا تنسَ فتح ساعة البورت في RCC قبل هذه الدالة
+ * Hint       : don't forget to enable the port's clock in RCC before this function
  */
 void GPIO_SetPinDirection(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinMode);
 
 /*
- * Brief      : يكتب 0 أو 1 على بن مخرج
- *              وفي وضع INPUT_PULLUP_PULLDOWN :
+ * Brief      : writes 0 or 1 to an output pin
+ *              and in INPUT_PULLUP_PULLDOWN mode :
  *              1 = pull up   ,   0 = pull down
  */
 void GPIO_SetPinValue(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinValue);
 
 /*
- * Brief      : يقرأ قيمة بن مدخل
- * Return     : GPIO_HIGH أو GPIO_LOW
+ * Brief      : reads the value of an input pin
+ * Return     : GPIO_HIGH or GPIO_LOW
  */
 u8   GPIO_GetPinValue(u8 Copy_u8PortID, u8 Copy_u8PinID);
 
 /*
- * Brief      : يعكس قيمة بن مخرج
+ * Brief      : toggles the value of an output pin
  */
 void GPIO_TogglePinValue(u8 Copy_u8PortID, u8 Copy_u8PinID);
 

@@ -13,44 +13,44 @@
 #define ICU_INTERFACE_H
 
 /*==================================================================*/
-/*  ICU = وحدة التقاط الحافة                                        */
+/*  ICU = Input Capture Unit                                        */
 /*                                                                  */
-/*  تقيس عرض النبضة الداخلة بالميكروثانية ــ بالهاردوير بالكامل .   */
-/*  لا مقاطعات ولا حلقات عدّ ــ المؤقّت يشتغل لوحده                 */
-/*  ونحن نقرأ النتيجة متى ما أردنا .                                */
+/*  Measures the width of the incoming pulse in microseconds ― entirely in hardware. */
+/*  No interrupts and no counting loops ― the timer runs on its own */
+/*  and we read the result whenever we want.                       */
 /*                                                                  */
-/*  البن المستعمل يعتمد على المؤقّت المختار في ICU_config.h :       */
+/*  The pin used depends on the timer chosen in ICU_config.h :      */
 /*      TIM2  ->  PA0                                               */
 /*      TIM3  ->  PA6                                               */
 /*      TIM4  ->  PB6                                               */
 /*==================================================================*/
 
 /*
- * Brief      : يهيّئ المؤقّت في وضع PWM Input
+ * Brief      : configures the timer in PWM Input mode
  * Parameters : void
  * Return     : void
  *
- * Hint       : افتح ساعة المؤقّت وساعة البورت في RCC قبل هذه الدالة ،
- *              واضبط البن على INPUT_FLOATING .
+ * Hint       : enable the timer's clock and the port's clock in RCC before this function,
+ *              and set the pin to INPUT_FLOATING.
  */
 void ICU_voidInit(void);
 
 /*
- * Brief      : عرض النبضة ( الزمن الذي بقيت فيه الإشارة عالية )
- * Return     : القيمة بالميكروثانية  ــ  إشارة سيرفو عادية : 1000 .. 2000
+ * Brief      : pulse width ( the time the signal stayed high )
+ * Return     : the value in microseconds  ―  a normal servo signal : 1000 .. 2000
  */
 u16 ICU_u16GetPulseWidth(void);
 
 /*
- * Brief      : طول الدورة الكاملة ( من حافة صاعدة إلى التي بعدها )
- * Return     : القيمة بالميكروثانية  ــ  إشارة سيرفو عادية : 20000
+ * Brief      : length of the full period ( from one rising edge to the next )
+ * Return     : the value in microseconds  ―  a normal servo signal : 20000
  */
 u16 ICU_u16GetPeriod(void);
 
 /*
- * Brief      : هل انقطعت الإشارة ؟
- * Return     : 1 اذا مرّت 65 ملي ثانية بلا أي حافة صاعدة
- *              0 اذا كانت الإشارة موجودة
+ * Brief      : has the signal been lost ?
+ * Return     : 1 if 65 ms passed with no rising edge at all
+ *              0 if the signal is present
  */
 u8 ICU_u8IsSignalLost(void);
 

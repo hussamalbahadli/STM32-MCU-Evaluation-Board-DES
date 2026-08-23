@@ -20,16 +20,16 @@
 /*==================================================================*/
 /*                    GPIO_SetPinDirection                          */
 /*                                                                  */
-/*  الفكرة كلها سطران :                                             */
-/*      1- امسح الأربع بتات القديمة   ( clear )                     */
-/*      2- ضع الأربع بتات الجديدة     ( set   )                     */
-/*  وهو نفس bit masking الذي أخذناه في LEC-4 بالضبط .               */
+/*  The whole idea is two lines :                                   */
+/*      1- clear the old four bits    ( clear )                     */
+/*      2- set the new four bits      ( set   )                     */
+/*  It's the exact same bit masking we used in LEC-4 .               */
 /*==================================================================*/
 void GPIO_SetPinDirection(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinMode)
 {
     u8 Local_u8Shift = 0;
 
-    /* البنّات 0..7 في سجل CRL ، والبنّات 8..15 في سجل CRH */
+    /* pins 0..7 are in register CRL, and pins 8..15 in register CRH */
     if (Copy_u8PinID <= PIN7)
     {
         Local_u8Shift = Copy_u8PinID * GPIO_PIN_WIDTH;
@@ -99,7 +99,7 @@ void GPIO_SetPinDirection(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinMode)
 /*==================================================================*/
 /*                      GPIO_SetPinValue                            */
 /*                                                                  */
-/*  ODR في STM32  =  PORTx في AVR                                   */
+/*  ODR in STM32  =  PORTx in AVR                                   */
 /*==================================================================*/
 void GPIO_SetPinValue(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinValue)
 {
@@ -129,7 +129,7 @@ void GPIO_SetPinValue(u8 Copy_u8PortID, u8 Copy_u8PinID, u8 Copy_u8PinValue)
 /*==================================================================*/
 /*                      GPIO_GetPinValue                            */
 /*                                                                  */
-/*  IDR في STM32  =  PINx في AVR                                    */
+/*  IDR in STM32  =  PINx in AVR                                    */
 /*==================================================================*/
 u8 GPIO_GetPinValue(u8 Copy_u8PortID, u8 Copy_u8PinID)
 {
@@ -165,7 +165,7 @@ void GPIO_TogglePinValue(u8 Copy_u8PortID, u8 Copy_u8PinID)
 /*==================================================================*/
 /*                    GPIO_SetPortDirection                         */
 /*                                                                  */
-/*  نكرّر نفس الأربع بتات ثماني مرات لملء CRL ، ومثلها لـ CRH .     */
+/*  We repeat the same four bits eight times to fill CRL, and the same for CRH. */
 /*==================================================================*/
 void GPIO_SetPortDirection(u8 Copy_u8PortID, u8 Copy_u8PortMode)
 {

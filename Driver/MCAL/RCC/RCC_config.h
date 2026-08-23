@@ -13,16 +13,16 @@
 #define RCC_CONFIG_H
 
 /*==================================================================*/
-/*  اختر مصدر ساعة النظام ــ خيار واحد فقط                          */
+/*  Choose the system clock source ― one option only                */
 /*                                                                  */
-/*      RCC_CLOCK_HSI   ->  المذبذب الداخلي  8 MHz                  */
-/*                          لا يحتاج كرستالة . الأبسط للبداية       */
+/*      RCC_CLOCK_HSI   ->  Internal oscillator  8 MHz               */
+/*                          No crystal needed. Simplest to start    */
 /*                                                                  */
-/*      RCC_CLOCK_HSE   ->  الكرستالة الخارجية  8 MHz               */
-/*                          أدق ــ يجب أن تكون موجودة على البورد    */
+/*      RCC_CLOCK_HSE   ->  External crystal  8 MHz                 */
+/*                          More accurate ― must be present on board*/
 /*                                                                  */
-/*      RCC_CLOCK_PLL   ->  HSE مضروبة في 9  =  72 MHz              */
-/*                          أعلى سرعة . تحتاج ضبط الفلاش أيضاً      */
+/*      RCC_CLOCK_PLL   ->  HSE multiplied by 9  =  72 MHz           */
+/*                          Highest speed. Also needs flash tuning  */
 /*==================================================================*/
 
 #define RCC_CLOCK_HSI     0
@@ -32,9 +32,9 @@
 #define RCC_u8_CLOCK_TYPE     RCC_CLOCK_HSI
 
 
-/*  تُستخدم فقط اذا اخترنا RCC_CLOCK_PLL
- *  القيمة 0b0111 تعني الضرب في 9   ( 8 MHz * 9 = 72 MHz )
- *  القاعدة : المعامل = القيمة + 2                                  */
+/*  Only used if we chose RCC_CLOCK_PLL
+ *  The value 0b0111 means multiply by 9   ( 8 MHz * 9 = 72 MHz )
+ *  Rule : multiplier = value + 2                                  */
 #define RCC_u8_PLL_MUL_VALUE    0b0111
 
 

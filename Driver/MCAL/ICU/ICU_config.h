@@ -13,7 +13,7 @@
 #define ICU_CONFIG_H
 
 /*==================================================================*/
-/*  اختر المؤقّت ــ وكل مؤقّت له بن ثابت لا يتغيّر                  */
+/*  Choose the timer ― each timer has a fixed pin that doesn't change */
 /*                                                                  */
 /*      ICU_TIMER2  ->  PA0                                         */
 /*      ICU_TIMER3  ->  PA6                                         */
@@ -28,14 +28,14 @@
 
 
 /*==================================================================*/
-/*  تردد الساعة الداخلة على المؤقّت ( بالهرتز )                     */
+/*  Clock frequency feeding the timer ( in Hertz )                  */
 /*                                                                  */
-/*  TIM2/3/4 على ناقل APB1 .                                        */
-/*      اذا كانت ساعة النظام HSI  ->  8000000                       */
-/*      اذا رفعتها إلى PLL 72 ميغا ->  72000000                      */
+/*  TIM2/3/4 are on the APB1 bus.                                    */
+/*      if the system clock is HSI  ->  8000000                     */
+/*      if you raised it to PLL 72 MHz ->  72000000                  */
 /*                                                                  */
-/*  خطأ هنا يعني أن كل القياسات خاطئة بنفس النسبة .                 */
-/*  اذا قرأت 9000 بدل 1000 فالسبب هو هذا السطر لا الكود .           */
+/*  A mistake here means every measurement is wrong by the same ratio. */
+/*  If you read 9000 instead of 1000, the cause is this line, not the code. */
 /*==================================================================*/
 #define ICU_u32_TIMER_CLOCK_HZ      8000000UL
 

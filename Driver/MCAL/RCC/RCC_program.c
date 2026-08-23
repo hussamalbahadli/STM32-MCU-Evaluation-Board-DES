@@ -25,69 +25,69 @@ void RCC_voidInitSysClock(void)
 
 #if   RCC_u8_CLOCK_TYPE == RCC_CLOCK_HSI
 
-    /* 1- شغّل المذبذب الداخلي */
+    /* 1- start the internal oscillator */
     SET_BIT(RCC_CR, RCC_CR_HSION);
 
-    /* 2- انتظر حتى يستقر */
+    /* 2- wait until it stabilizes */
     while (GET_BIT(RCC_CR, RCC_CR_HSIRDY) == 0);
 
-    /* 3- اجعله مصدر ساعة النظام */
+    /* 3- make it the system clock source */
     RCC_CFGR &= ~(0b11UL << RCC_CFGR_SW);
     RCC_CFGR |=  ((u32)RCC_SW_HSI << RCC_CFGR_SW);
 
 
 #elif RCC_u8_CLOCK_TYPE == RCC_CLOCK_HSE
 
-    /* 1- شغّل الكرستالة الخارجية */
+    /* 1- start the external crystal */
     SET_BIT(RCC_CR, RCC_CR_HSEON);
 
-    /* 2- انتظر حتى تستقر
-     *    ملاحظة : اذا لم تكن الكرستالة موجودة على البورد
-     *    سيتوقف البرنامج هنا للأبد . هذا أول مكان تفحصه
-     *    اذا تجمّد البرنامج عند الإقلاع .                    */
+    /* 2- wait until it stabilizes
+     *    Note : if the crystal is not present on the board
+     *    the program will hang here forever. This is the first place to check
+     *    if the program freezes on boot.                    */
     while (GET_BIT(RCC_CR, RCC_CR_HSERDY) == 0);
 
-    /* 3- اجعلها مصدر ساعة النظام */
+    /* 3- make it the system clock source */
     RCC_CFGR &= ~(0b11UL << RCC_CFGR_SW);
     RCC_CFGR |=  ((u32)RCC_SW_HSE << RCC_CFGR_SW);
 
 
 #elif RCC_u8_CLOCK_TYPE == RCC_CLOCK_PLL
 
-    /* 1- شغّل الكرستالة أولاً لأن الـ PLL سيأخذ منها */
+    /* 1- start the crystal first because the PLL will take its input from it */
     SET_BIT(RCC_CR, RCC_CR_HSEON);
     while (GET_BIT(RCC_CR, RCC_CR_HSERDY) == 0);
 
-    /* 2- اطفئ الـ PLL قبل تغيير اعداداته ( لا يقبل التعديل وهو شغّال ) */
+    /* 2- turn off the PLL before changing its settings ( it doesn't accept changes while running ) */
     CLR_BIT(RCC_CR, RCC_CR_PLLON);
 
-    /* 3- مصدر الـ PLL = HSE بدون تقسيم */
+    /* 3- PLL source = HSE without division */
     SET_BIT(RCC_CFGR, RCC_CFGR_PLLSRC);
     CLR_BIT(RCC_CFGR, RCC_CFGR_PLLXTPRE);
 
-    /* 4- معامل الضرب */
+    /* 4- multiplier factor */
     RCC_CFGR &= ~(0b1111UL << RCC_CFGR_PLLMUL);
     RCC_CFGR |=  ((u32)RCC_u8_PLL_MUL_VALUE << RCC_CFGR_PLLMUL);
 
-    /* 5- الفلاش أبطأ من المعالج عند 72 ميغا
-     *    Latency = 2  ضرورية فوق 48 ميغا
-     *    بدونها : HardFault فوراً عند أول قراءة كود        */
+    /* 5- flash is slower than the processor at 72 MHz
+     *    Latency = 2  is required above 48 MHz
+     *    without it : an immediate HardFault at the first code read        */
     FLASH_ACR &= ~(0b111UL);
     FLASH_ACR |=  (0b010UL);
 
-    /* 6- شغّل الـ PLL وانتظره */
+    /* 6- start the PLL and wait for it */
     SET_BIT(RCC_CR, RCC_CR_PLLON);
     while (GET_BIT(RCC_CR, RCC_CR_PLLRDY) == 0);
 
-    /* 7- اجعله مصدر ساعة النظام */
+    /* 7- make it the system clock source */
     RCC_CFGR &= ~(0b11UL << RCC_CFGR_SW);
     RCC_CFGR |=  ((u32)RCC_SW_PLL << RCC_CFGR_SW);
 
-    /* 8- تأكد أن التبديل تمّ فعلاً */
+    /* 8- confirm the switch actually happened */
     while (((RCC_CFGR >> RCC_CFGR_SWS) & 0b11UL) != RCC_SW_PLL);
 
 #else
-    #error "RCC_config.h : RCC_u8_CLOCK_TYPE غير صحيح"
+    #error "RCC_config.h : RCC_u8_CLOCK_TYPE is invalid"
 #endif
 
 }
@@ -98,7 +98,7 @@ void RCC_voidInitSysClock(void)
 /*==================================================================*/
 void RCC_voidEnablePeripheralClock(u8 Copy_u8BusID, u8 Copy_u8PerID)
 {
-    /* نفس شكل switch الذي استخدمناه في درايفر DIO على AVR */
+    /* The same switch style we used in the DIO driver on AVR */
 
     switch (Copy_u8BusID)
     {

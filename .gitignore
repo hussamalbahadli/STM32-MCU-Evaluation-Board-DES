@@ -1,5 +1,5 @@
 # ==========================================================
-#  Keil MDK-ARM  —  مخرجات البناء . لا تُرفع أبداً
+#  Keil MDK-ARM  —  build outputs. Never commit these.
 # ==========================================================
 Objects/
 Listings/
@@ -15,14 +15,14 @@ RTE/
 *.build_log.htm
 *.htm
 
-# ملفات وسيطة
+# Intermediate files
 *.o
 *.d
 *.crf
 *.i
 *.lst
 
-# مخرجات نهائية ( تُبنى من المصدر ــ لا معنى لحفظها )
+# Final outputs (built from source — no point saving them)
 *.axf
 *.elf
 *.hex
@@ -32,7 +32,7 @@ RTE/
 *.eep
 *.lss
 
-# أدوات
+# Tools
 JLinkLog.txt
 *.jdebug*
 .vs/
@@ -43,8 +43,8 @@ Thumbs.db
 .DS_Store
 
 # ==========================================================
-#  ما يُرفع فعلاً :
-#     ‎*.uvprojx     ملف المشروع
-#     ‎*.c  *.h      المصدر
-#     ‎*.md          التوثيق
+#  What is actually tracked:
+#     *.uvprojx     project file
+#     *.c  *.h      source
+#     *.md          documentation
 # ==========================================================
